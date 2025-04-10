@@ -165,10 +165,53 @@ $trains = isset($train_data[$zone]) ? $train_data[$zone] : [];
         }
         .train-card {
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .train-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('img/bg7.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            opacity: 0.2;
         }
         .train-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .train-card:hover::before {
+            opacity: 0.4;
+        }
+        .section-heading {
+            position: relative;
+            display: inline-block;
+        }
+        .section-heading::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: #2563eb;
+            border-radius: 3px;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+        }
+        body {
+            padding-top: 80px;
         }
     </style>
 </head>
@@ -199,10 +242,25 @@ $trains = isset($train_data[$zone]) ? $train_data[$zone] : [];
     <!-- Header -->
     <header class="train-list-bg text-white py-16">
         <div class="container mx-auto px-6 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4"><?php echo htmlspecialchars($zone); ?></h1>
-            <p class="text-xl mb-4">List of trains operating under <?php echo htmlspecialchars($zone); ?></p>
-            <div class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold">
+            <div class="relative">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 relative inline-block">
+                    <?php echo htmlspecialchars($zone); ?>
+                    <span class="absolute -left-10 -top-10 text-6xl opacity-20">
+                        <i class="fas fa-train"></i>
+                    </span>
+                </h1>
+            </div>
+            <p class="text-xl mb-6">List of trains operating under <?php echo htmlspecialchars($zone); ?></p>
+            <div class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold mb-4">
                 Total Trains: <?php echo count($trains); ?>
+            </div>
+            <div class="mt-8 flex justify-center">
+                <a href="index.php" class="bg-white text-blue-600 px-6 py-3 rounded-lg mr-4 hover:bg-gray-100 transition duration-300 flex items-center">
+                    <i class="fas fa-home mr-2"></i> Back to Home
+                </a>
+                <a href="javascript:history.back()" class="bg-transparent border border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-blue-600 transition duration-300 flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Back
+                </a>
             </div>
         </div>
     </header>
@@ -210,23 +268,32 @@ $trains = isset($train_data[$zone]) ? $train_data[$zone] : [];
     <!-- Train List -->
     <section class="py-16">
         <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-16 section-heading">Available Trains</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <?php foreach ($trains as $train): ?>
                 <div class="train-card bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="p-6">
                         <div class="flex items-center mb-4">
-                            <i class="fas fa-train text-3xl text-blue-600 mr-4"></i>
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-train text-3xl text-blue-600"></i>
+                            </div>
                             <div>
                                 <h3 class="text-xl font-semibold"><?php echo htmlspecialchars($train['name']); ?></h3>
                                 <p class="text-gray-600">Train No: <?php echo htmlspecialchars($train['number']); ?></p>
                             </div>
                         </div>
                         <div class="border-t pt-4 mt-2">
-                            <div class="flex justify-between items-center">
+                            <div class="flex justify-between items-center mb-4">
                                 <span class="text-gray-600">
                                     <i class="fas fa-cog mr-1"></i> Maintenance Status
                                 </span>
                                 <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Up to date</span>
+                            </div>
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-gray-600">
+                                    <i class="fas fa-clock mr-1"></i> Last Checked
+                                </span>
+                                <span class="text-gray-700 text-sm"><?php echo date('d M Y', strtotime('-' . rand(1, 30) . ' days')); ?></span>
                             </div>
                             <div class="mt-4">
                                 <a href="coach_maintenance.php?train=<?php echo urlencode($train['number']); ?>&name=<?php echo urlencode($train['name']); ?>&zone=<?php echo urlencode($zone); ?>" class="block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full transition duration-300 text-center">

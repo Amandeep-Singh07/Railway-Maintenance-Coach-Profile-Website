@@ -63,10 +63,23 @@ if ($result = mysqli_query($conn, $sql)) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .form-header {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('img/bg2.jpg');
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('img/bg1.jpg');
             background-size: cover;
             background-position: center;
             padding-top: 80px;
+        }
+        .form-container {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), url('img/bg7.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        .input-group:hover label {
+            color: #2563eb;
+        }
+        .input-group:hover input, 
+        .input-group:hover select, 
+        .input-group:hover textarea {
+            border-color: #2563eb;
         }
     </style>
 </head>
@@ -126,7 +139,7 @@ if ($result = mysqli_query($conn, $sql)) {
     <!-- Schedule Maintenance Form -->
     <section class="py-12">
         <div class="container mx-auto px-6">
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden form-container">
                 <div class="p-6">                    
                     <form id="schedule-maintenance-form" class="space-y-6">
                         <?php if($coach_id > 0): ?>
@@ -138,9 +151,9 @@ if ($result = mysqli_query($conn, $sql)) {
                         <?php endif; ?>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
+                            <div class="input-group">
                                 <label class="block text-gray-700 text-sm font-bold mb-2" for="maintenance-type">Maintenance Type</label>
-                                <select id="maintenance-type" name="maintenance_type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                <select id="maintenance-type" name="maintenance_type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 transition-colors duration-200" required>
                                     <option value="">Select Maintenance Type</option>
                                     <option value="Routine">Routine</option>
                                     <option value="Preventive">Preventive</option>
@@ -149,14 +162,14 @@ if ($result = mysqli_query($conn, $sql)) {
                                 </select>
                             </div>
                             
-                            <div>
+                            <div class="input-group">
                                 <label class="block text-gray-700 text-sm font-bold mb-2" for="maintenance-date">Maintenance Date</label>
-                                <input type="date" id="maintenance-date" name="maintenance_date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                <input type="date" id="maintenance-date" name="maintenance_date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 transition-colors duration-200" required>
                             </div>
                             
-                            <div>
+                            <div class="input-group">
                                 <label class="block text-gray-700 text-sm font-bold mb-2" for="technician">Assigned Technician</label>
-                                <select id="technician" name="technician_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                <select id="technician" name="technician_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 transition-colors duration-200" required>
                                     <option value="">Select Technician</option>
                                     <?php foreach ($technicians as $technician): ?>
                                         <option value="<?php echo $technician['id']; ?>">
@@ -169,9 +182,9 @@ if ($result = mysqli_query($conn, $sql)) {
                                 </select>
                             </div>
                             
-                            <div>
+                            <div class="input-group">
                                 <label class="block text-gray-700 text-sm font-bold mb-2" for="priority">Priority</label>
-                                <select id="priority" name="priority" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                <select id="priority" name="priority" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 transition-colors duration-200" required>
                                     <option value="Low">Low</option>
                                     <option value="Medium" selected>Medium</option>
                                     <option value="High">High</option>
@@ -180,16 +193,16 @@ if ($result = mysqli_query($conn, $sql)) {
                             </div>
                         </div>
                         
-                        <div>
+                        <div class="input-group">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="notes">Notes</label>
-                            <textarea id="notes" name="notes" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" rows="4" placeholder="Add any additional notes or instructions"></textarea>
+                            <textarea id="notes" name="notes" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 transition-colors duration-200" rows="4" placeholder="Add any additional notes or instructions"></textarea>
                         </div>
                         
                         <div class="flex items-center justify-end space-x-4">
-                            <a href="javascript:history.back()" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-400 focus:outline-none focus:shadow-outline">
+                            <a href="javascript:history.back()" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-400 focus:outline-none focus:shadow-outline transition-colors duration-200">
                                 Cancel
                             </a>
-                            <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline">
+                            <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline transform hover:scale-105 transition-all duration-200">
                                 Schedule Maintenance
                             </button>
                         </div>
