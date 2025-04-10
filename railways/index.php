@@ -12,6 +12,7 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            padding-top: 80px; /* Added padding to account for navbar */
         }
         .coach-card {
             background-image: url('img/bg1.jpg');
@@ -28,11 +29,44 @@
             background-size: cover;
             background-position: center;
         }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.95);
+            min-width: 250px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 100;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .dropdown-content a {
+            color: #1e40af;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        .dropdown-content a:hover {
+            background-color: #f3f4f6;
+            color: #1e3a8a;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
     <!-- Navigation -->
-    <nav class="bg-blue-800 text-white shadow-lg fixed w-full z-50">
+    <nav class="bg-blue-800 text-white shadow-lg fixed w-full z-50 top-0">
         <div class="container mx-auto px-6 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
@@ -57,9 +91,74 @@
         <div class="container mx-auto px-6 text-center">
             <h1 class="text-4xl md:text-6xl font-bold mb-4">Railway Maintenance Coach Profile</h1>
             <p class="text-xl mb-8">Efficient tracking and management of railway coach maintenance</p>
-            <button class="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 transform hover:scale-105">
-                Get Started
-            </button>
+            <div class="dropdown inline-block">
+                <button class="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 transform hover:scale-105 flex items-center">
+                    Choose Your Zone
+                    <i class="fas fa-chevron-down ml-2"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="zone_trains.php?zone=Central Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        Central Railway
+                    </a>
+                    <a href="zone_trains.php?zone=Eastern Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        Eastern Railway
+                    </a>
+                    <a href="zone_trains.php?zone=Northern Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        Northern Railway
+                    </a>
+                    <a href="zone_trains.php?zone=Southern Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        Southern Railway
+                    </a>
+                    <a href="zone_trains.php?zone=Western Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        Western Railway
+                    </a>
+                    <a href="zone_trains.php?zone=South Central Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        South Central Railway
+                    </a>
+                    <a href="zone_trains.php?zone=North Central Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        North Central Railway
+                    </a>
+                    <a href="zone_trains.php?zone=South Eastern Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        South Eastern Railway
+                    </a>
+                    <a href="zone_trains.php?zone=North Eastern Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        North Eastern Railway
+                    </a>
+                    <a href="zone_trains.php?zone=East Central Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        East Central Railway
+                    </a>
+                    <a href="zone_trains.php?zone=East Coast Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        East Coast Railway
+                    </a>
+                    <a href="zone_trains.php?zone=North Western Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        North Western Railway
+                    </a>
+                    <a href="zone_trains.php?zone=South Western Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        South Western Railway
+                    </a>
+                    <a href="zone_trains.php?zone=West Central Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        West Central Railway
+                    </a>
+                    <a href="zone_trains.php?zone=South East Central Railway" class="flex items-center">
+                        <i class="fas fa-train mr-2"></i>
+                        South East Central Railway
+                    </a>
+                </div>
+            </div>
         </div>
     </header>
 

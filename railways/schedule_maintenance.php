@@ -2,11 +2,18 @@
 // Include database configuration
 require_once "config.php";
 
-// Get coach ID from URL
+// Check for coach_type and train parameters
+$coach_type = isset($_GET['coach_type']) ? $_GET['coach_type'] : '';
+$train_number = isset($_GET['train']) ? $_GET['train'] : '';
+$train_name = isset($_GET['name']) ? $_GET['name'] : '';
+
+// Backwards compatibility: still check for coach_id from old links
 $coach_id = isset($_GET['coach_id']) ? intval($_GET['coach_id']) : 0;
 
-// Fetch coach details from database
+// Coach data will either come from the database or be constructed from parameters
 $coach_data = null;
+
+// If we have a coach_id, fetch from database (old path)
 if ($coach_id > 0) {
     $sql = "SELECT * FROM coaches WHERE id = ?";
     if ($stmt = mysqli_prepare($conn, $sql)) {
@@ -19,17 +26,26 @@ if ($coach_id > 0) {
         }
         mysqli_stmt_close($stmt);
     }
-}
-
-// If coach not found, redirect to index
-if (!$coach_data) {
+} 
+// If we have coach_type and train parameters, construct the coach data (new path)
+elseif (!empty($coach_type) && !empty($train_number) && !empty($train_name)) {
+    // Construct a coach data object with the parameters
+    $coach_data = [
+        'id' => 0, // Will be generated when actually saved
+        'name' => "$coach_type Coach of $train_name",
+        'type' => $coach_type,
+        'train_number' => $train_number,
+        'train_name' => $train_name
+    ];
+} else {
+    // If neither path has data, redirect to index
     header("Location: index.php");
     exit;
 }
 
 // Fetch available technicians
 $technicians = [];
-$sql = "SELECT id, name FROM technicians WHERE status = 'Available'";
+$sql = "SELECT id, name, specialization FROM technicians WHERE status = 'Available'";
 if ($result = mysqli_query($conn, $sql)) {
     while ($row = mysqli_fetch_assoc($result)) {
         $technicians[] = $row;
@@ -45,15 +61,23 @@ if ($result = mysqli_query($conn, $sql)) {
     <title>Schedule Maintenance - <?php echo htmlspecialchars($coach_data['name']); ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .form-header {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('img/bg2.jpg');
+            background-size: cover;
+            background-position: center;
+            padding-top: 80px;
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
     <!-- Navigation -->
-    <nav class="bg-blue-800 text-white shadow-lg">
+    <nav class="bg-blue-800 text-white shadow-lg fixed w-full z-50 top-0">
         <div class="container mx-auto px-6 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <a href="index.php" class="flex items-center">
-                        <i class="fas fa-train text-2xl mr-2"></i>
+                        <img src="img/logo.png" alt="Railway Logo" class="h-12 w-auto mr-2">
                         <span class="text-xl font-bold">Railway Maintenance</span>
                     </a>
                 </div>
@@ -70,28 +94,48 @@ if ($result = mysqli_query($conn, $sql)) {
         </div>
     </nav>
 
-    <!-- Schedule Maintenance Section -->
+    <!-- Header -->
+    <header class="form-header text-white py-16">
+        <div class="container mx-auto px-6">
+            <h1 class="text-3xl md:text-4xl font-bold mb-4">Schedule Maintenance</h1>
+            <div class="flex flex-col md:flex-row md:items-center">
+                <div class="md:w-2/3">
+                    <p class="text-xl mb-2">
+                        <?php echo isset($coach_data['train_name']) ? htmlspecialchars($coach_data['train_name']) : ''; ?>
+                        <?php if(isset($coach_data['train_number'])): ?>
+                            <span class="text-blue-300">(<?php echo htmlspecialchars($coach_data['train_number']); ?>)</span>
+                        <?php endif; ?>
+                    </p>
+                    <p class="text-lg"><?php echo htmlspecialchars($coach_data['name']); ?></p>
+                </div>
+                <div class="md:w-1/3 mt-4 md:mt-0 md:text-right">
+                    <?php if($coach_id > 0): ?>
+                    <a href="coach_details.php?id=<?php echo $coach_id; ?>" class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Coach Details
+                    </a>
+                    <?php else: ?>
+                    <a href="javascript:history.back()" class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-arrow-left mr-2"></i> Back
+                    </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Schedule Maintenance Form -->
     <section class="py-12">
         <div class="container mx-auto px-6">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h1 class="text-3xl font-bold">Schedule Maintenance</h1>
-                        <a href="coach_details.php?id=<?php echo $coach_id; ?>" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">
-                            <i class="fas fa-arrow-left mr-2"></i> Back to Coach Details
-                        </a>
-                    </div>
-                    
-                    <div class="mb-6">
-                        <h2 class="text-xl font-semibold mb-2">Coach Information</h2>
-                        <p class="text-gray-600">
-                            <span class="font-semibold">Coach:</span> <?php echo htmlspecialchars($coach_data['name']); ?> 
-                            (ID: <?php echo htmlspecialchars($coach_data['id']); ?>)
-                        </p>
-                    </div>
-                    
+                <div class="p-6">                    
                     <form id="schedule-maintenance-form" class="space-y-6">
+                        <?php if($coach_id > 0): ?>
                         <input type="hidden" name="coach_id" value="<?php echo $coach_id; ?>">
+                        <?php else: ?>
+                        <input type="hidden" name="coach_type" value="<?php echo htmlspecialchars($coach_type); ?>">
+                        <input type="hidden" name="train_number" value="<?php echo htmlspecialchars($train_number); ?>">
+                        <input type="hidden" name="train_name" value="<?php echo htmlspecialchars($train_name); ?>">
+                        <?php endif; ?>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
@@ -115,7 +159,12 @@ if ($result = mysqli_query($conn, $sql)) {
                                 <select id="technician" name="technician_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                                     <option value="">Select Technician</option>
                                     <?php foreach ($technicians as $technician): ?>
-                                        <option value="<?php echo $technician['id']; ?>"><?php echo htmlspecialchars($technician['name']); ?></option>
+                                        <option value="<?php echo $technician['id']; ?>">
+                                            <?php echo htmlspecialchars($technician['name']); ?> 
+                                            <?php if(!empty($technician['specialization'])): ?>
+                                                (<?php echo htmlspecialchars($technician['specialization']); ?>)
+                                            <?php endif; ?>
+                                        </option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -124,7 +173,7 @@ if ($result = mysqli_query($conn, $sql)) {
                                 <label class="block text-gray-700 text-sm font-bold mb-2" for="priority">Priority</label>
                                 <select id="priority" name="priority" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                                     <option value="Low">Low</option>
-                                    <option value="Medium">Medium</option>
+                                    <option value="Medium" selected>Medium</option>
                                     <option value="High">High</option>
                                     <option value="Critical">Critical</option>
                                 </select>
@@ -137,7 +186,7 @@ if ($result = mysqli_query($conn, $sql)) {
                         </div>
                         
                         <div class="flex items-center justify-end space-x-4">
-                            <a href="coach_details.php?id=<?php echo $coach_id; ?>" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-400 focus:outline-none focus:shadow-outline">
+                            <a href="javascript:history.back()" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-400 focus:outline-none focus:shadow-outline">
                                 Cancel
                             </a>
                             <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline">
@@ -155,13 +204,13 @@ if ($result = mysqli_query($conn, $sql)) {
         <div class="container mx-auto px-6">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-4 md:mb-0">
-                    <h3 class="text-xl font-bold">Railway Maintenance</h3>
+                    <img src="img/logo.png" alt="Railway Logo" class="h-12 w-auto mb-2">
                     <p class="text-blue-200">Efficient tracking and management</p>
                 </div>
                 <div class="flex space-x-4">
-                    <a href="#" class="hover:text-blue-200"><i class="fab fa-facebook"></i></a>
-                    <a href="#" class="hover:text-blue-200"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="hover:text-blue-200"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="hover:text-blue-200 transform hover:scale-110 transition duration-300"><i class="fab fa-facebook text-2xl"></i></a>
+                    <a href="#" class="hover:text-blue-200 transform hover:scale-110 transition duration-300"><i class="fab fa-twitter text-2xl"></i></a>
+                    <a href="#" class="hover:text-blue-200 transform hover:scale-110 transition duration-300"><i class="fab fa-linkedin text-2xl"></i></a>
                 </div>
             </div>
             <div class="mt-8 text-center text-blue-200">
@@ -170,7 +219,6 @@ if ($result = mysqli_query($conn, $sql)) {
         </div>
     </footer>
 
-    <script src="js/main.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // Set minimum date to today
@@ -205,8 +253,12 @@ if ($result = mysqli_query($conn, $sql)) {
                         if (data.status === "success") {
                             // Show success message
                             alert(data.message);
-                            // Redirect to coach details page
-                            window.location.href = `coach_details.php?id=${formData.get('coach_id')}`;
+                            // Redirect based on whether it came from coach_id or train params
+                            if (formData.has('coach_id')) {
+                                window.location.href = `coach_details.php?id=${formData.get('coach_id')}`;
+                            } else {
+                                window.location.href = 'index.php#maintenance';
+                            }
                         } else {
                             // Show error message
                             alert(data.message || "Something went wrong. Please try again later.");
