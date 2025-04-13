@@ -155,10 +155,16 @@ if ($result = mysqli_query($conn, $sql)) {
                                 <label class="block text-gray-700 text-sm font-bold mb-2" for="maintenance-type">Maintenance Type</label>
                                 <select id="maintenance-type" name="maintenance_type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 transition-colors duration-200" required>
                                     <option value="">Select Maintenance Type</option>
-                                    <option value="Routine">Routine</option>
-                                    <option value="Preventive">Preventive</option>
-                                    <option value="Corrective">Corrective</option>
-                                    <option value="Emergency">Emergency</option>
+                                    <option value="General Inspection">General Inspection</option>
+                                    <option value="Electrical System Check">Electrical System Check</option>
+                                    <option value="Brake System Repair">Brake System Repair</option>
+                                    <option value="HVAC System Maintenance">HVAC System Maintenance</option>
+                                    <option value="Suspension Adjustment">Suspension Adjustment</option>
+                                    <option value="Wheel & Axle Inspection">Wheel & Axle Inspection</option>
+                                    <option value="Door Mechanism Repair">Door Mechanism Repair</option>
+                                    <option value="Coupling Mechanism">Coupling Mechanism Check</option>
+                                    <option value="Plumbing System Repair">Plumbing System Repair</option>
+                                    <option value="Interior Refurbishment">Interior Refurbishment</option>
                                 </select>
                             </div>
                             

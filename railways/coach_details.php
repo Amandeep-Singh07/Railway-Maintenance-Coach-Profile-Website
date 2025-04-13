@@ -131,7 +131,25 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
                                 </div>
                                 <div class="flex">
                                     <span class="font-semibold w-1/3">Maintenance Type:</span>
-                                    <span class="w-2/3"><?php echo htmlspecialchars($coach_data['maintenance_type']); ?></span>
+                                    <span class="w-2/3">
+                                    <?php 
+                                    $maintenanceType = $coach_data['maintenance_type'];
+                                    // Convert generic maintenance types to specific issues
+                                    switch($maintenanceType) {
+                                        case 'Routine':
+                                            echo 'General Inspection';
+                                            break;
+                                        case 'Preventive':
+                                            echo 'Electrical System Check';
+                                            break;
+                                        case 'Corrective':
+                                            echo 'Brake System Repair';
+                                            break;
+                                        default:
+                                            echo htmlspecialchars($maintenanceType);
+                                    }
+                                    ?>
+                                    </span>
                                 </div>
                                 <div class="flex">
                                     <span class="font-semibold w-1/3">Assigned Technician:</span>
@@ -165,7 +183,25 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
                                         <?php foreach ($maintenance_history as $history): ?>
                                             <tr>
                                                 <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($history['maintenance_date']); ?></td>
-                                                <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($history['maintenance_type']); ?></td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <?php 
+                                                    $maintenanceType = $history['maintenance_type'];
+                                                    // Convert generic maintenance types to specific issues
+                                                    switch($maintenanceType) {
+                                                        case 'Routine':
+                                                            echo 'General Inspection';
+                                                            break;
+                                                        case 'Preventive':
+                                                            echo 'Electrical System Check';
+                                                            break;
+                                                        case 'Corrective':
+                                                            echo 'Brake System Repair';
+                                                            break;
+                                                        default:
+                                                            echo htmlspecialchars($maintenanceType);
+                                                    }
+                                                    ?>
+                                                </td>
                                                 <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($history['technician']); ?></td>
                                                 <td class="px-6 py-4 whitespace-nowrap">
                                                     <span class="px-2 py-1 rounded text-sm <?php echo $history['status'] === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'; ?>">
@@ -192,10 +228,15 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
                                     <label class="block text-gray-700 text-sm font-bold mb-2" for="issue-type">Issue Type</label>
                                     <select id="issue-type" name="issue_type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                                         <option value="">Select Issue Type</option>
-                                        <option value="Mechanical">Mechanical</option>
-                                        <option value="Electrical">Electrical</option>
-                                        <option value="Structural">Structural</option>
-                                        <option value="Interior">Interior</option>
+                                        <option value="Electrical">Electrical Issues</option>
+                                        <option value="HVAC">HVAC System Failure</option>
+                                        <option value="Braking">Brake System Fault</option>
+                                        <option value="Suspension">Suspension Problems</option>
+                                        <option value="Wheel">Wheel & Axle Damage</option>
+                                        <option value="Door">Door Malfunction</option>
+                                        <option value="Coupling">Coupling Mechanism</option>
+                                        <option value="Plumbing">Water/Plumbing Issues</option>
+                                        <option value="Interior">Interior Damage</option>
                                         <option value="Other">Other</option>
                                     </select>
                                 </div>
