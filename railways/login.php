@@ -20,7 +20,7 @@ if (isset($_SESSION['login_error'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,9 +89,72 @@ if (isset($_SESSION['login_error'])) {
             border-radius: 0.375rem;
             font-size: 0.875rem;
         }
+        /* Theme switch styles */
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        .theme-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        /* Dark theme styles */
+        html[data-theme="dark"] .form-card {
+            background-color: #1f2937 !important;
+            color: #e5e7eb;
+        }
+        html[data-theme="dark"] .input-field {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #e5e7eb;
+        }
+        html[data-theme="dark"] h2, 
+        html[data-theme="dark"] .font-bold {
+            color: #f3f4f6;
+        }
+        html[data-theme="dark"] p, 
+        html[data-theme="dark"] label {
+            color: #d1d5db;
+        }
+        html[data-theme="dark"] .text-gray-600 {
+            color: #9ca3af;
+        }
+        html[data-theme="dark"] .text-gray-700 {
+            color: #e5e7eb;
+        }
+        html[data-theme="dark"] .text-gray-800 {
+            color: #f3f4f6;
+        }
+        html[data-theme="dark"] .border-gray-200 {
+            border-color: #374151;
+        }
     </style>
 </head>
 <body>
+    <!-- Theme Switch Button -->
+    <div class="theme-switch">
+        <button id="themeToggle" class="theme-btn" aria-label="Toggle Theme">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+    
     <div class="login-section">
         <div class="container mx-auto px-6">
             <div class="max-w-md mx-auto form-card bg-white bg-opacity-95 rounded-lg shadow-2xl p-8">
@@ -182,6 +245,40 @@ if (isset($_SESSION['login_error'])) {
                         errorAlert.style.display = 'none';
                     }, 500);
                 }, 5000);
+            }
+            
+            // Theme switcher functionality
+            const themeToggle = document.getElementById('themeToggle');
+            const htmlElement = document.documentElement;
+            const themeIcon = themeToggle.querySelector('i');
+            
+            // Check for saved theme preference or use default light theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            htmlElement.setAttribute('data-theme', savedTheme);
+            
+            // Update icon based on current theme
+            updateThemeIcon(savedTheme);
+            
+            // Toggle theme when button is clicked
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = htmlElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                htmlElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                updateThemeIcon(newTheme);
+            });
+            
+            // Function to update the icon based on theme
+            function updateThemeIcon(theme) {
+                if (theme === 'dark') {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                } else {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                }
             }
         });
     </script>

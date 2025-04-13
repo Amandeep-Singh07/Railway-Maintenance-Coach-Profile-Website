@@ -19,7 +19,7 @@ $last_month_date = date('Y-m-d', strtotime('-1 month'));
 $three_months_future = date('Y-m-d', strtotime('+3 months'));
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -195,9 +195,88 @@ $three_months_future = date('Y-m-d', strtotime('+3 months'));
             background-color: #dcfce7;
             color: #166534;
         }
+        /* Theme switch styles */
+        .theme-switch {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 100;
+        }
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        .theme-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        /* Dark theme styles */
+        html[data-theme="dark"] body {
+            background-color: #111827;
+            color: #e5e7eb;
+        }
+        html[data-theme="dark"] .bg-white {
+            background-color: #1f2937 !important;
+        }
+        html[data-theme="dark"] .bg-gray-50 {
+            background-color: #111827 !important;
+        }
+        html[data-theme="dark"] .bg-gray-100 {
+            background-color: #1f2937 !important;
+        }
+        html[data-theme="dark"] .text-gray-600 {
+            color: #9ca3af !important;
+        }
+        html[data-theme="dark"] .text-gray-700 {
+            color: #d1d5db !important;
+        }
+        html[data-theme="dark"] .text-gray-800, 
+        html[data-theme="dark"] .text-gray-900 {
+            color: #f3f4f6 !important;
+        }
+        html[data-theme="dark"] .border-gray-200 {
+            border-color: #374151 !important;
+        }
+        html[data-theme="dark"] .dropdown-content {
+            background-color: #1f2937;
+        }
+        html[data-theme="dark"] .dropdown-content a {
+            color: #e5e7eb;
+        }
+        html[data-theme="dark"] .dropdown-content a:hover {
+            background-color: #374151;
+            color: #f3f4f6;
+        }
+        html[data-theme="dark"] tr:hover td {
+            background-color: #374151;
+        }
+        html[data-theme="dark"] .text-blue-600 {
+            color: #60a5fa !important;
+        }
+        html[data-theme="dark"] .text-indigo-600 {
+            color: #818cf8 !important;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
+    <!-- Theme Switch Button -->
+    <div class="theme-switch">
+        <button id="themeToggle" class="theme-btn" aria-label="Toggle Theme">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
     <!-- Navigation -->
     <nav class="bg-gradient-to-r from-blue-800 to-blue-900 text-white shadow-lg fixed w-full z-50 top-0 transition-all duration-300">
         <div class="container mx-auto px-6 py-3">
@@ -413,6 +492,40 @@ $three_months_future = date('Y-m-d', strtotime('+3 months'));
                 element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
                 observer.observe(element);
             });
+            
+            // Theme switcher functionality
+            const themeToggle = document.getElementById('themeToggle');
+            const htmlElement = document.documentElement;
+            const themeIcon = themeToggle.querySelector('i');
+            
+            // Check for saved theme preference or use default light theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            htmlElement.setAttribute('data-theme', savedTheme);
+            
+            // Update icon based on current theme
+            updateThemeIcon(savedTheme);
+            
+            // Toggle theme when button is clicked
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = htmlElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                htmlElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                updateThemeIcon(newTheme);
+            });
+            
+            // Function to update the icon based on theme
+            function updateThemeIcon(theme) {
+                if (theme === 'dark') {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                } else {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                }
+            }
         });
 
         // Toggle dropdown
