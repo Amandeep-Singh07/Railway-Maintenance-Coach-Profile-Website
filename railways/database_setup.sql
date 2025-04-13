@@ -84,25 +84,26 @@ CREATE TABLE IF NOT EXISTS contact_messages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert sample data for coaches
+-- Insert sample data for coaches using dynamic dates
+-- Current date will be calculated when script is run
 INSERT INTO coaches (name, type, manufacturing_year, capacity, status, last_maintenance, next_maintenance, maintenance_type, assigned_technician) VALUES
-('Sleeper Class Coach', 'Sleeper', 2015, 72, 'Active', '2024-02-15', '2024-05-15', 'Routine', 'John Smith'),
-('AC First Class', 'AC First', 2018, 24, 'Active', '2024-03-01', '2024-06-01', 'Preventive', 'Sarah Johnson'),
-('General Class', 'General', 2016, 120, 'Active', '2024-02-28', '2024-05-28', 'Routine', 'Michael Brown');
+('Sleeper Class Coach', 'Sleeper', 2015, 72, 'Active', DATE_SUB(CURRENT_DATE(), INTERVAL 32 DAY), DATE_ADD(CURRENT_DATE(), INTERVAL 58 DAY), 'Routine', 'Rajesh Kumar'),
+('AC First Class', 'AC First', 2018, 24, 'Active', DATE_SUB(CURRENT_DATE(), INTERVAL 15 DAY), DATE_ADD(CURRENT_DATE(), INTERVAL 75 DAY), 'Preventive', 'Priya Sharma'),
+('General Class', 'General', 2016, 120, 'Active', DATE_SUB(CURRENT_DATE(), INTERVAL 25 DAY), DATE_ADD(CURRENT_DATE(), INTERVAL 65 DAY), 'Routine', 'Vikram Singh');
 
 -- Insert sample data for technicians
 INSERT INTO technicians (name, specialization, contact_number, email, status) VALUES
-('John Smith', 'Mechanical', '555-123-4567', 'john.smith@railway.com', 'Assigned'),
-('Sarah Johnson', 'Electrical', '555-234-5678', 'sarah.johnson@railway.com', 'Assigned'),
-('Michael Brown', 'Structural', '555-345-6789', 'michael.brown@railway.com', 'Assigned'),
-('Emily Davis', 'Mechanical', '555-456-7890', 'emily.davis@railway.com', 'Available'),
-('Robert Wilson', 'Electrical', '555-567-8901', 'robert.wilson@railway.com', 'Available'),
-('Jennifer Lee', 'Interior', '555-678-9012', 'jennifer.lee@railway.com', 'Available');
+('Rajesh Kumar', 'Mechanical', '555-123-4567', 'rajesh.kumar@railway.com', 'Assigned'),
+('Priya Sharma', 'Electrical', '555-234-5678', 'priya.sharma@railway.com', 'Assigned'),
+('Vikram Singh', 'Structural', '555-345-6789', 'vikram.singh@railway.com', 'Assigned'),
+('Ananya Patel', 'Mechanical', '555-456-7890', 'ananya.patel@railway.com', 'Available'),
+('Suresh Reddy', 'Electrical', '555-567-8901', 'suresh.reddy@railway.com', 'Available'),
+('Meera Gupta', 'Interior', '555-678-9012', 'meera.gupta@railway.com', 'Available');
 
--- Insert sample data for maintenance_history
+-- Insert sample data for maintenance_history using dynamic dates
 INSERT INTO maintenance_history (coach_id, maintenance_date, maintenance_type, technician, status, notes) VALUES
-(1, '2024-02-15', 'Routine', 'John Smith', 'Completed', 'Regular maintenance completed successfully. All systems functioning properly.'),
-(2, '2024-03-01', 'Preventive', 'Sarah Johnson', 'Completed', 'Preventive maintenance completed. Replaced air filters and checked electrical systems.'),
-(3, '2024-02-28', 'Routine', 'Michael Brown', 'Completed', 'Routine inspection completed. Minor repairs performed on seating.'),
-(1, '2023-11-15', 'Corrective', 'John Smith', 'Completed', 'Fixed braking system issues. Replaced worn components.'),
-(2, '2023-12-01', 'Routine', 'Sarah Johnson', 'Completed', 'Regular maintenance completed. All systems checked and functioning properly.'); 
+(1, DATE_SUB(CURRENT_DATE(), INTERVAL 32 DAY), 'Routine', 'Rajesh Kumar', 'Completed', 'Regular maintenance completed successfully. All systems functioning properly.'),
+(2, DATE_SUB(CURRENT_DATE(), INTERVAL 15 DAY), 'Preventive', 'Priya Sharma', 'Completed', 'Preventive maintenance completed. Replaced air filters and checked electrical systems.'),
+(3, DATE_SUB(CURRENT_DATE(), INTERVAL 25 DAY), 'Routine', 'Vikram Singh', 'Completed', 'Routine inspection completed. Minor repairs performed on seating.'),
+(1, DATE_SUB(CURRENT_DATE(), INTERVAL 122 DAY), 'Corrective', 'Rajesh Kumar', 'Completed', 'Fixed braking system issues. Replaced worn components.'),
+(2, DATE_SUB(CURRENT_DATE(), INTERVAL 105 DAY), 'Routine', 'Priya Sharma', 'Completed', 'Regular maintenance completed. All systems checked and functioning properly.'); 
