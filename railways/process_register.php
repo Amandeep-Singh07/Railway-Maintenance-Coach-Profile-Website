@@ -40,18 +40,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
     
-    // In a real application, you would:
-    // 1. Check if username/email already exists in database
-    // 2. Hash the password using password_hash()
-    // 3. Store user data in a database
-    // 4. Send verification email
+    // Connect to database
+    require_once "config.php";
     
-    // For this demo, we'll just create a success message
-    $_SESSION['register_success'] = "Registration successful! You can now log in.";
+    // Check if username already exists
+    $check_sql = "SELECT id FROM users WHERE username = ?";
+    if($stmt = mysqli_prepare($conn, $check_sql)) {
+        mysqli_stmt_bind_param($stmt, "s", $username);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+        
+        if(mysqli_stmt_num_rows($stmt) > 0){
+            $_SESSION['register_error'] = "This username is already taken";
+            header("Location: register.php");
+            exit;
+        }
+        mysqli_stmt_close($stmt);
+    }
     
-    // Redirect to login page
-    header("Location: login.php");
-    exit;
+    // Check if email already exists
+    $check_sql = "SELECT id FROM users WHERE email = ?";
+    if($stmt = mysqli_prepare($conn, $check_sql)) {
+        mysqli_stmt_bind_param($stmt, "s", $email);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+        
+        if(mysqli_stmt_num_rows($stmt) > 0){
+            $_SESSION['register_error'] = "This email is already registered";
+            header("Location: register.php");
+            exit;
+        }
+        mysqli_stmt_close($stmt);
+    }
+    
+    // Hash the password
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    
+    // Insert user into database
+    $insert_sql = "INSERT INTO users (fullname, email, username, password, created_at) VALUES (?, ?, ?, ?, NOW())";
+    
+    if($stmt = mysqli_prepare($conn, $insert_sql)) {
+        mysqli_stmt_bind_param($stmt, "ssss", $fullname, $email, $username, $hashed_password);
+        
+        if(mysqli_stmt_execute($stmt)){
+            $_SESSION['register_success'] = "Registration successful! You can now log in.";
+            header("Location: login.php");
+            exit;
+        } else {
+            $_SESSION['register_error'] = "Something went wrong. Please try again later.";
+            header("Location: register.php");
+            exit;
+        }
+        
+        mysqli_stmt_close($stmt);
+    }
+    
+    // Close connection
+    mysqli_close($conn);
 } else {
     // If someone tries to access this page directly
     header("Location: register.php");

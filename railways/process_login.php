@@ -8,11 +8,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
     
-    // In a real application, you would validate credentials against a database
-    // For demo purposes, we'll use hardcoded credentials
-    $valid_username = "rajesh";
-    $valid_password = "railway123"; // In production, use password_hash() and password_verify()
-    
     // Simple validation
     if (empty($username) || empty($password)) {
         $_SESSION['login_error'] = "Username and password are required";
@@ -20,22 +15,64 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
     
-    // Check credentials
-    if ($username === $valid_username && $password === $valid_password) {
-        // Set session variables
-        $_SESSION['user_id'] = 1;
-        $_SESSION['username'] = $username;
-        $_SESSION['logged_in'] = true;
+    // Connect to database
+    require_once "config.php";
+    
+    // Prepare a select statement
+    $sql = "SELECT id, username, password FROM users WHERE username = ?";
+    
+    if($stmt = mysqli_prepare($conn, $sql)){
+        // Bind variables to the prepared statement as parameters
+        mysqli_stmt_bind_param($stmt, "s", $username);
         
-        // Redirect to the home page
-        header("Location: index.php");
-        exit;
-    } else {
-        // Invalid credentials
-        $_SESSION['login_error'] = "Invalid username or password";
-        header("Location: login.php");
-        exit;
+        // Attempt to execute the prepared statement
+        if(mysqli_stmt_execute($stmt)){
+            // Store result
+            mysqli_stmt_store_result($stmt);
+            
+            // Check if username exists, if yes then verify password
+            if(mysqli_stmt_num_rows($stmt) == 1){
+                // Bind result variables
+                mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password);
+                
+                if(mysqli_stmt_fetch($stmt)){
+                    if(password_verify($password, $hashed_password)){
+                        // Password is correct, so start a new session
+                        session_start();
+                        
+                        // Store data in session variables
+                        $_SESSION['user_id'] = $id;
+                        $_SESSION['username'] = $username;
+                        $_SESSION['logged_in'] = true;
+                        
+                        // Redirect user to welcome page
+                        header("Location: index.php");
+                        exit;
+                    } else {
+                        // Password is not valid
+                        $_SESSION['login_error'] = "Invalid username or password";
+                        header("Location: login.php");
+                        exit;
+                    }
+                }
+            } else {
+                // Username doesn't exist
+                $_SESSION['login_error'] = "Invalid username or password";
+                header("Location: login.php");
+                exit;
+            }
+        } else {
+            $_SESSION['login_error'] = "Oops! Something went wrong. Please try again later.";
+            header("Location: login.php");
+            exit;
+        }
+        
+        // Close statement
+        mysqli_stmt_close($stmt);
     }
+    
+    // Close connection
+    mysqli_close($conn);
 } else {
     // If someone tries to access this page directly
     header("Location: login.php");
