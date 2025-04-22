@@ -45,7 +45,7 @@ elseif (!empty($coach_type) && !empty($train_number) && !empty($train_name)) {
 
 // Fetch available technicians
 $technicians = [];
-$sql = "SELECT id, name, specialization FROM technicians WHERE status = 'Available'";
+$sql = "SELECT id, name, specialization FROM technicians";
 if ($result = mysqli_query($conn, $sql)) {
     while ($row = mysqli_fetch_assoc($result)) {
         $technicians[] = $row;
